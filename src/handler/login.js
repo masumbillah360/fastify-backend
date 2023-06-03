@@ -1,5 +1,6 @@
 const fastifyJwt = require("fastify-jwt");
 const config = require("../config");
+const prisma = require("../../prisma");
 
 exports.login = async (req, rep) => {
   const { email, password } = req.body;
@@ -11,7 +12,18 @@ exports.login = async (req, rep) => {
     success: true,
     message: "Login successful",
     data: {
-        token,
+      token,
     },
+  };
+};
+
+exports.getUser = async (req, rep) => {
+  const users = await prisma.tbl_users.findMany({
+    take: 500,
+  });
+  return {
+    success: true,
+    message: "User Found Sucessfully",
+    data: users,
   };
 };

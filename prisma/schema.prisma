@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  title     String   @db.VarChar(255)
+  content   String?
+  published Boolean  @default(false)
+  authorId  Int
+  User      User     @relation(fields: [authorId], references: [id])
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  first_name String   @db.VarChar(10)
+  last_name  String   @db.VarChar(10)
+  email      String   @db.VarChar(30)
+  phone      String   @db.VarChar(11)
+  password   String   @db.VarChar(12)
+  Post       Post[]
+}
+
+model comment {
+  id           Int    @id
+  post_name    String
+  user_comment String
+}
+
+model tbl_comments {
+  id                  Int                   @id @default(autoincrement())
+  user_id             String
+  post_id             String
+  comments            String
+  created_at          DateTime              @default(now())
+  updated_at          DateTime
+  comments_id         String                @unique
+  tbl_posts           tbl_posts             @relation(fields: [post_id], references: [post_id], onDelete: Cascade)
+  tbl_users           tbl_users             @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  tbl_comments_replay tbl_comments_replay[]
+}
+
+model tbl_comments_replay {
+  id           Int          @id @default(autoincrement())
+  user_id      String
+  comments_id  String
+  replay       String
+  created_at   DateTime     @default(now())
+  updated_at   DateTime
+  tbl_comments tbl_comments @relation(fields: [comments_id], references: [comments_id], onDelete: Cascade)
+  tbl_users    tbl_users    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+}
+
+model tbl_posts {
+  id           Int            @id @default(autoincrement())
+  user_id      String
+  title        String
+  content      String
+  image_url    String?
+  created_at   DateTime       @default(now())
+  updated_at   DateTime
+  post_id      String         @unique
+  tbl_comments tbl_comments[]
+  tbl_users    tbl_users      @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+}
+
+model tbl_users {
+  id                  Int                   @id @default(autoincrement())
+  user_id             String                @unique
+  email               String
+  phone               String
+  first_name          String
+  last_name           String
+  profile_image       String?
+  created_at          DateTime              @default(now())
+  updated_at          DateTime
+  tbl_comments        tbl_comments[]
+  tbl_comments_replay tbl_comments_replay[]
+  tbl_posts           tbl_posts[]
+}

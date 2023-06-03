@@ -1,7 +1,10 @@
-const { successMsg } = require("./common");
+const { successMsg, user } = require("./common");
 
 exports.defaultOpts = {
   schema: {
+    description: "Test Router",
+    operationID: "TestRoutes",
+    tags: ["TestRoutes"],
     response: {
       200: {
         description: "OK",
@@ -16,6 +19,9 @@ exports.defaultOpts = {
 
 exports.loginSchema = {
   schema: {
+    description: "Login User",
+    operationID: "Logins",
+    tags: ["Login"],
     body: {
       type: "object",
       properties: {
@@ -34,13 +40,6 @@ exports.loginSchema = {
             type: "object",
             properties: {
               token: { type: "string", default: "jwt-token" },
-              decoded: {
-                type: "object",
-                properties: {
-                  user_id: { type: "string" },
-                  iat: { type: "integer" },
-                },
-              },
             },
           },
         },
@@ -54,13 +53,44 @@ exports.loginSchema = {
             type: "object",
             properties: {
               token: { type: "string", default: "jwt-token" },
-              decoded: {
-                type: "object",
-                properties: {
-                  user_id: { type: "string" },
-                  iat: { type: "integer" },
-                },
-              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+exports.userSchema = {
+  schema: {
+    description: "User Details",
+    operationID: "userDetails",
+    tags: ["userDetails"],
+    response: {
+      200: {
+        description: "OK",
+        type: "object",
+        properties: {
+          ...successMsg("User Found Sucessfully"),
+          data: {
+            type: "array",
+            items: {
+              type: "object",
+              ...user(),
+            },
+          },
+        },
+      },
+      default: {
+        description: "OK",
+        type: "object",
+        properties: {
+          ...successMsg("User Found Sucessfully"),
+          data: {
+            type: "array",
+            items: {
+              type: "object",
+              ...user(),
             },
           },
         },
